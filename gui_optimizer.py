@@ -17,7 +17,8 @@ def optimize_save():
 
     username = user_entry.get().strip()
     if not username:
-        username = "augustdheart0"
+        messagebox.showerror("Error", "Please enter your in-game username.")
+        return
 
     wipe_hidden = var_hidden.get()
     wipe_fauna = var_fauna.get()
@@ -136,10 +137,9 @@ file_entry = ttk.Entry(file_frame)
 file_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
 ttk.Button(file_frame, text="Browse", command=browse_file).pack(side=tk.RIGHT)
 
-# Username Input
+# Username Input (Left blank so users must enter their own)
 ttk.Label(frame, text="Your Exact In-Game Username:").pack(anchor="w")
 user_entry = ttk.Entry(frame)
-user_entry.insert(0, "augustdheart0")
 user_entry.pack(fill=tk.X, pady=(0, 15))
 
 # Wiping Options

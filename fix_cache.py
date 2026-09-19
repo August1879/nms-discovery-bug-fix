@@ -23,5 +23,4 @@ print(f"Reduced records from {len(records)} to {len(filtered_records)}.")
 print("Saved clean cache to discoveries_fixed.json")
 
 with open('discoveries_fixed.json', 'w', encoding='utf-8') as file:
-    json.dump(data, file, indent=2)git add fix_cache.py
-git commit -m "Added safety check to fail if username is not provided"
+    json.dump(data, file, indent=2)

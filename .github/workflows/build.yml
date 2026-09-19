@@ -1,0 +1,30 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        
+    - name: Install PyInstaller
+      run: pip install pyinstaller
+      
+    - name: Build EXE
+      run: pyinstaller --onefile --windowed gui_optimizer.py
+      
+    - name: Upload Application
+      uses: actions/upload-artifact@v4
+      with:
+        name: NMS-Discovery-Optimizer
+        path: dist/gui_optimizer.exe

@@ -178,6 +178,7 @@ root.configure(bg=BG_DARK)
 
 style = ttk.Style()
 style.theme_use("clam")
+style.configure("TFrame", background=BG_DARK) # <-- ADD THIS LINE
 style.configure("TLabel", background=BG_DARK, foreground=FG_LIGHT, font=("Segoe UI", 10))
 style.configure("TCheckbutton", background=BG_DARK, foreground=FG_LIGHT, font=("Segoe UI", 9))
 style.configure("TButton", background=ACCENT_COLOR, foreground="#ffffff", font=("Segoe UI", 10, "bold"))

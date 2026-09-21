@@ -52,8 +52,15 @@ def optimize_save(log_widget):
         log_message(log_widget, "--- Starting Optimization Process ---")
         log_message(log_widget, "Loading and sanitizing save file...")
         
-        with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+        with open(filepath, 'r', encoding='utf-8-sig', errors='ignore') as f:
             content = f.read()
+
+        if not content.strip():
+            log_message(log_widget, "ERROR: The file is completely empty.")
+            messagebox.showerror("Error", "The selected JSON file is empty (0 bytes). The Save Editor failed to export your save data.")
+            return
+
+        content = content.replace('\\', '\\\\').replace('\\\\"', '\\"')
 
         content = content.replace('\\', '\\\\').replace('\\\\"', '\\"')
         content = "".join(ch for ch in content if ord(ch) >= 32 or ch in '\n\r\t')

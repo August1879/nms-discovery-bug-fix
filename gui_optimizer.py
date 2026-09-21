@@ -59,7 +59,7 @@ def optimize_save(log_widget):
         content = "".join(ch for ch in content if ord(ch) >= 32 or ch in '\n\r\t')
         data = json.loads(content, strict=False)
 
-        # 1. Automatic Timestamped Backup
+        # Automatic Timestamped Backup
         backup_filename = f"full_save_backup_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         backup_path = os.path.join(os.path.dirname(filepath), backup_filename)
         log_message(log_widget, f"Creating safety backup: {backup_filename}")
@@ -135,8 +135,15 @@ def optimize_save(log_widget):
         changes_made = False
         if removed_count > 0:
             data["DiscoveryManagerData"]["DiscoveryData-v1"]["Store"]["Record"] = cleaned_records
+            
+            # BUG FIX: Automatically update the memory allocation counters
+            new_record_count = len(cleaned_records)
+            data["DiscoveryManagerData"]["DiscoveryData-v1"]["ReserveStore"] = new_record_count
+            data["DiscoveryManagerData"]["DiscoveryData-v1"]["ReserveManaged"] = new_record_count
+            
             changes_made = True
             log_message(log_widget, f"Successfully wiped {removed_count} unwanted records.")
+            log_message(log_widget, f"Updated memory counters (ReserveStore/Managed set to {new_record_count}).")
 
         if whitelisted_skipped > 0:
             log_message(log_widget, f"Protected {whitelisted_skipped} records matching your whitelist.")
@@ -164,7 +171,7 @@ def optimize_save(log_widget):
 
 # --- Modern Dark Theme UI Setup ---
 root = tk.Tk()
-root.title("NMS Save Optimizer v1.1 (Dark Edition)")
+root.title("NMS Save Optimizer v1.1.1 (Dark Edition)")
 root.geometry("520x680")
 root.resizable(False, False)
 
@@ -178,7 +185,7 @@ root.configure(bg=BG_DARK)
 
 style = ttk.Style()
 style.theme_use("clam")
-style.configure("TFrame", background=BG_DARK) # <-- ADD THIS LINE
+style.configure("TFrame", background=BG_DARK)
 style.configure("TLabel", background=BG_DARK, foreground=FG_LIGHT, font=("Segoe UI", 10))
 style.configure("TCheckbutton", background=BG_DARK, foreground=FG_LIGHT, font=("Segoe UI", 9))
 style.configure("TButton", background=ACCENT_COLOR, foreground="#ffffff", font=("Segoe UI", 10, "bold"))

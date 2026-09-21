@@ -92,10 +92,10 @@ def optimize_save(log_widget):
             is_foreign = (usn != username and usn != "")
             is_mine = (usn == username)
 
-            # Whitelist Protection Check
+            # BUG FIX v1.1.2: Exact match instead of substring match to prevent false positives
             is_whitelisted = False
             if whitelisted_names:
-                if usn.lower() in whitelisted_names or any(w in record_name for w in whitelisted_names):
+                if usn.lower() in whitelisted_names or record_name in whitelisted_names:
                     is_whitelisted = True
 
             # Paradise Logic
@@ -136,7 +136,7 @@ def optimize_save(log_widget):
         if removed_count > 0:
             data["DiscoveryManagerData"]["DiscoveryData-v1"]["Store"]["Record"] = cleaned_records
             
-            # BUG FIX: Automatically update the memory allocation counters
+            # Update the memory allocation counters (v1.1.1 fix)
             new_record_count = len(cleaned_records)
             data["DiscoveryManagerData"]["DiscoveryData-v1"]["ReserveStore"] = new_record_count
             data["DiscoveryManagerData"]["DiscoveryData-v1"]["ReserveManaged"] = new_record_count
@@ -171,7 +171,7 @@ def optimize_save(log_widget):
 
 # --- Modern Dark Theme UI Setup ---
 root = tk.Tk()
-root.title("NMS Save Optimizer v1.1.1 (Dark Edition)")
+root.title("NMS Save Optimizer v1.1.2 (Dark Edition)")
 root.geometry("520x680")
 root.resizable(False, False)
 

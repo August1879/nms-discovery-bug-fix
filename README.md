@@ -2,12 +2,11 @@
 
 A lightweight, powerful tool to clean up your No Man's Sky save file by removing bloated, foreign discovery data. This tool drastically reduces your save file size, fixing memory overflow issues and disappearing discoveries.
 
-## What's New in v1.1.6
-* **Precision JSON Regex (Hotfix):** Upgraded the backslash neutralizer to safely ignore valid internal game paths (like UI textures) while flawlessly catching stray invalid hex escapes.
+## What's New in v1.1.7
+* **Universal JSON Escape Sanitizer:** The tool now mimics the No Man's Sky game engine, automatically neutralizing any corrupted multiplayer Comm Ball data or invalid hex codes (like `\x` or `\e`) into plain text without crashing.
 * **Built-in Auto-Updater:** The tool silently checks GitHub on launch and alerts you when a new version is available.
 * **Smart Diagnostics:** Automatically detects 0-byte Save Editor memory crashes and provides exact terminal commands to allocate more RAM to Goatfungus.
 * **Legacy Ship Protection:** Added explicit UI warnings to prevent NomNom from corrupting legacy Atlas Rises ships during the import phase.
-* **Bulletproof JSON Parsing:** Strict UTF-8 backend ensures complex nested base data is never mangled.
 * **Pre-Write Safety:** Creates a byte-for-byte backup and ensures the JSON output only publishes if the write is completed without interruption.
 
 ---

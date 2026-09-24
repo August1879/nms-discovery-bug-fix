@@ -15,10 +15,24 @@ def load_json(path):
     if not original:
         raise ValueError("The selected JSON file is empty.")
     
-    # Sanitize invalid raw backslashes left by in-game custom names
-    # Added negative lookbehind (?<!\\) to prevent altering valid double-backslash file paths
     decoded_text = original.decode("utf-8-sig")
-    decoded_text = re.sub(r'(?<!\\)\\(?![nrtbf"\\/u])', r'\\\\', decoded_text)
+    
+    # UNIVERSAL GAME-ENGINE STYLE SANITIZER
+    # Scans every backslash. If it is not a strictly valid JSON escape, it forces it into plain text.
+    def sanitize_bad_escapes(match):
+        s = match.group(0)
+        # Let perfect standard JSON escapes pass safely
+        if len(s) == 2 and s[1] in '"\\/bfnrt':
+            return s
+        # Let perfect 4-digit hex Unicode escapes pass safely
+        if len(s) == 6 and s[1] == 'u':
+            return s
+        # It is unrecognized garbage (like \x, \e, or malformed \u). Neutralize it.
+        return '\\' + s
+        
+    # Matches valid 4-digit unicode escapes, valid standard escapes, OR any stray backslash
+    universal_pattern = re.compile(r'\\u[0-9a-fA-F]{4}|\\["\\/bfnrt]|\\.', re.DOTALL)
+    decoded_text = universal_pattern.sub(sanitize_bad_escapes, decoded_text)
 
     def reject_constant(value):
         raise ValueError(f"Invalid JSON constant: {value}")

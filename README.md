@@ -16,7 +16,8 @@ A lightweight, powerful tool to clean up your No Man's Sky save file by removing
 I am currently recruiting players to colonize the system and build a massive hub alliance. 
 
 If you are looking for a permanent home system with perfect weather and an active community, come build your base with us! 
-**[Click here to get the Portal Glyphs and join the Alliance!]** *(Note: Add your actual link here in the markdown)*
+* **[View the Planet & Portal Glyphs on Reddit](https://www.reddit.com/r/NoMansSkyTheGame/s/LTUupn3YrA)**
+* **[Message me on Discord to join](https://discord.com/users/1082971394968657920)**
 
 ---
 

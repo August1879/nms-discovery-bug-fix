@@ -8,7 +8,7 @@ import threading
 
 from save_safety import load_json, optimize_data, write_output
 
-CURRENT_VERSION = "v1.1.5"
+CURRENT_VERSION = "v1.1.6"
 REPO_URL = "https://api.github.com/repos/August1879/nms-discovery-bug-fix/releases/latest"
 
 def check_for_updates():

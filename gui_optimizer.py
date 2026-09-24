@@ -59,6 +59,22 @@ def optimize_save(log_widget):
         messagebox.showerror("Error", "Please select a valid full_save.json file.")
         return
 
+    # Check for Goatfungus memory crash (0-byte file) before handing it to the parser
+    if os.path.getsize(filepath) == 0:
+        log_message(log_widget, "ERROR: Detected 0-byte file. Save Editor memory crash suspected.")
+        error_msg = (
+            "The selected JSON file is completely empty (0 bytes).\n\n"
+            "DIAGNOSIS:\n"
+            "Your Save Editor ran out of memory while trying to export your massive legacy save file.\n\n"
+            "HOW TO FIX IT:\n"
+            "1. Open your Windows Command Prompt in your Goatfungus folder.\n"
+            "2. Run this exact command to give it more RAM:\n"
+            "java -Xmx4G -jar NMSSaveEditor.jar\n"
+            "3. Export the JSON again and bring it back here."
+        )
+        messagebox.showerror("Export Crash Detected", error_msg)
+        return
+
     username = user_entry.get().strip()
     if not username:
         messagebox.showerror("Error", "Please enter your in-game username.")
@@ -108,15 +124,27 @@ def optimize_save(log_widget):
         log_message(log_widget, f"Removed {len(removed)} records; added {len(added)} Paradise records.")
         log_message(log_widget, f"Saved original backup to: {backup_path}")
         log_message(log_widget, f"Saved optimized save to: {output_path}")
-        messagebox.showinfo("Success", f"Optimization complete!\nOriginal backup: {backup_path.name}\nOutput: {output_path.name}")
+        
+        # Inject NomNom Warning into success message
+        success_msg = (
+            f"Optimization complete!\n"
+            f"Original backup: {backup_path.name}\n"
+            f"Output: {output_path.name}\n\n"
+            "CRITICAL WARNING FOR LEGACY PLAYERS:\n"
+            "If your save is from the Atlas Rises era, DO NOT use NomNom to import this new file. "
+            "NomNom has a known bug that will permanently turn your legacy ships into default fighters.\n\n"
+            "Use Goatfungus to import this optimized file to keep your ships safe."
+        )
+        messagebox.showinfo("Success - Read Carefully", success_msg)
 
     except Exception as e:
         log_message(log_widget, f"ERROR: {str(e)}")
         messagebox.showerror("Error", f"Failed to process file:\n{str(e)}")
 
+
 # --- Modern Dark Theme UI Setup ---
 root = tk.Tk()
-root.title("NMS Save Optimizer")
+root.title("NMS Save Optimizer v1.1.4 (Dark Edition)")
 root.geometry("520x680")
 root.resizable(False, False)
 

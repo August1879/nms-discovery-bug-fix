@@ -1,32 +1,23 @@
-import json
+from save_safety import load_json, optimize_data, write_output
 
-print("Loading and sanitizing save file...")
-with open('full_save.json', 'r', encoding='utf-8', errors='ignore') as f:
-    content = f.read()
 
-content = content.replace('\\', '\\\\').replace('\\\\"', '\\"')
-content = "".join(ch for ch in content if ord(ch) >= 32 or ch in '\n\r\t')
-data = json.loads(content, strict=False)
+username = input("Enter your in-game username: ").strip()
+if not username:
+    raise SystemExit("A username is required.")
 
-records = data.get("DiscoveryManagerData", {}).get("DiscoveryData-v1", {}).get("Store", {}).get("Record", [])
-print(f"Original record count: {len(records)}")
+data, original = load_json("full_save.json")
+options = {"hidden": True, "fauna": False, "flora": False,
+           "mineral": False, "all": False, "paradise": False}
+removed, _, _ = optimize_data(data, username, set(), options, update_reserves=False)
+if not removed:
+    raise SystemExit("No hidden systems found. No output was written.")
 
-cleaned_records = []
-removed_count = 0
+print(f"Review {len(removed)} hidden systems to remove (including your own):")
+for index, record_type, name, owner in removed:
+    print(f"  #{index}: {record_type!r}, {name!r}, owner {owner!r}")
+if input("Type DELETE to write the result: ").strip() != "DELETE":
+    print("Cancelled before writing any files.")
+    raise SystemExit(0)
 
-for r in records:
-    # Filter out any record containing the 'F': 1 hidden flag
-    if r.get("FL", {}).get("F") == 1:
-        removed_count += 1
-    else:
-        cleaned_records.append(r)
-
-print(f"Successfully wiped {removed_count} removed systems from the cache!")
-
-if removed_count > 0:
-    data["DiscoveryManagerData"]["DiscoveryData-v1"]["Store"]["Record"] = cleaned_records
-    
-    print("Saving to clean_save.json...")
-    with open("clean_save.json", "w", encoding="utf-8") as out:
-        json.dump(data, out, separators=(',', ':'))
-    print("Done! Import 'clean_save.json' into Goatfungus to apply the fix.")
+backup, output = write_output("full_save.json", data, original, "clean_save.json")
+print(f"Original backup: {backup}\nOptimized output: {output}")

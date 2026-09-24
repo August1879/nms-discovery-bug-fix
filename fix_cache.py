@@ -1,26 +1,33 @@
-import json
-import sys
+from save_safety import discovery_records, load_json, require_owner, write_output
 
-# --- MANUALLY ENTER YOUR IN-GAME USERNAME HERE ---
-my_username = "YOUR_IN_GAME_NAME" 
+my_username = input("Enter your in-game username: ").strip()
+if not my_username:
+    raise SystemExit("A username is required.")
 
-# Fails the script if the user forgot to add their name
-if my_username == "YOUR_IN_GAME_NAME" or not my_username.strip():
-    print("ERROR: You must edit this script and replace 'YOUR_IN_GAME_NAME' with your actual No Man's Sky username on line 5 before running.")
-    sys.exit(1)
+data, original = load_json('discoveries.json')
+records = discovery_records(data, cache_only=True)
+require_owner(records, my_username)
 
-with open('discoveries.json', 'r', encoding='utf-8') as file:
-    data = json.load(file)
+filtered_records, removed = [], []
+for index, record in enumerate(records):
+    if not isinstance(record, dict) or not isinstance(record.get('OWS'), dict) or not isinstance(record['OWS'].get('USN'), str) or not isinstance(record.get('DD'), dict):
+        raise ValueError(f"Discovery record {index} has an unexpected format.")
+    if record['OWS']['USN'].casefold() == my_username.casefold():
+        filtered_records.append(record)
+    else:
+        removed.append((index, record))
+if not removed:
+    raise SystemExit("No foreign records found. No output was written.")
 
-records = data['DiscoveryData-v1']['Store']['Record']
-
-# This converts each record to text and checks if your username is inside it
-filtered_records = [r for r in records if my_username in str(r)]
+print(f"Will remove {len(removed)} of {len(records)} records:")
+for index, record in removed:
+    detail = record.get('DD', {})
+    print(f"  #{index}: {detail.get('DT', '')!r}, {detail.get('N', '')!r}, owner {record['OWS']['USN']!r}")
+if input("Type DELETE to write the result: ").strip() != "DELETE":
+    print("Cancelled before writing any files.")
+    raise SystemExit(0)
 
 data['DiscoveryData-v1']['Store']['Record'] = filtered_records
-
 print(f"Reduced records from {len(records)} to {len(filtered_records)}.")
-print("Saved clean cache to discoveries_fixed.json")
-
-with open('discoveries_fixed.json', 'w', encoding='utf-8') as file:
-    json.dump(data, file, indent=2)
+backup, output = write_output('discoveries.json', data, original, 'discoveries_fixed.json')
+print(f"Original backup: {backup}\nClean cache: {output}")

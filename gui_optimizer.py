@@ -173,10 +173,11 @@ def optimize_save(log_widget):
         log_message(log_widget, f"ERROR: {str(e)}")
         messagebox.showerror("Error", f"Failed to process file:\n{str(e)}")
 
+
 # --- Modern Dark Theme UI Setup ---
 root = tk.Tk()
 root.title(f"NMS Save Optimizer {CURRENT_VERSION} (Dark Edition)")
-root.geometry("520x680")
+root.geometry("520x720") # Slightly increased height to accommodate the ad
 root.resizable(False, False)
 
 # Dark color palette configuration
@@ -255,6 +256,24 @@ log_box.config(state=tk.DISABLED)
 scrollbar = ttk.Scrollbar(log_frame, orient="vertical", command=log_box.yview)
 scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 log_box.config(yscrollcommand=scrollbar.set)
+
+# --- Alliance Advertisement Section ---
+ad_frame = tk.Frame(main_frame, bg=BG_DARK)
+ad_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(10, 0))
+
+ad_title = tk.Label(ad_frame, text="🌌 Found a pristine Earth-like planet! Join the Alliance:", bg=BG_DARK, fg=FG_LIGHT, font=("Segoe UI", 9))
+ad_title.pack()
+
+links_frame = tk.Frame(ad_frame, bg=BG_DARK)
+links_frame.pack(pady=2)
+
+reddit_link = tk.Label(links_frame, text="[View Reddit Post]", fg="#ff4500", bg=BG_DARK, cursor="hand2", font=("Segoe UI", 9, "bold"))
+reddit_link.pack(side=tk.LEFT, padx=10)
+reddit_link.bind("<Button-1>", lambda e: webbrowser.open("https://www.reddit.com/r/NoMansSkyTheGame/s/LTUupn3YrA"))
+
+discord_link = tk.Label(links_frame, text="[Add on Discord]", fg="#5865F2", bg=BG_DARK, cursor="hand2", font=("Segoe UI", 9, "bold"))
+discord_link.pack(side=tk.LEFT, padx=10)
+discord_link.bind("<Button-1>", lambda e: webbrowser.open("https://discord.com/users/1082971394968657920"))
 
 # Check for updates in the background before starting the main loop
 check_for_updates()

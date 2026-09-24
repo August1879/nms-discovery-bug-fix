@@ -5,6 +5,7 @@ import hashlib
 import json
 import math
 import os
+import re
 import tempfile
 from pathlib import Path
 
@@ -13,6 +14,12 @@ def load_json(path):
     original = Path(path).read_bytes()
     if not original:
         raise ValueError("The selected JSON file is empty.")
+    
+    # Sanitize invalid raw backslashes left by in-game custom names
+    # This neutralizes stray backslashes while strictly preserving valid JSON escapes (\n, \t, \", \\, \uXXXX)
+    decoded_text = original.decode("utf-8-sig")
+    decoded_text = re.sub(r'\\(?![nrtbf"\\/u])', r'\\\\', decoded_text)
+
     def reject_constant(value):
         raise ValueError(f"Invalid JSON constant: {value}")
 
@@ -30,7 +37,7 @@ def load_json(path):
             result[key] = value
         return result
 
-    data = json.loads(original.decode("utf-8-sig"), parse_constant=reject_constant,
+    data = json.loads(decoded_text, parse_constant=reject_constant,
                       parse_float=finite_float, object_pairs_hook=unique_keys)
     if not isinstance(data, dict):
         raise ValueError("The exported JSON must contain an object at the root.")
@@ -82,7 +89,7 @@ def optimize_data(data, username, whitelist, options, update_reserves=True):
         if isinstance(generation_id, list) and len(generation_id) == 2:
             existing_ids.add(tuple(map(str, generation_id)))
 
-    kept, removed, added = [], [], []
+    kept, removed, added = [], []
     protected = 0
     names = {name.casefold() for name in whitelist}
     owner_name = username.casefold()

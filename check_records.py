@@ -1,7 +1,6 @@
-import json
+from save_safety import discovery_records, load_json
 
-with open('discoveries.json', 'r', encoding='utf-8') as file:
-    data = json.load(file)
+data, _ = load_json('discoveries.json')
 
-record_count = len(data['DiscoveryData-v1']['Store']['Record'])
+record_count = len(discovery_records(data, cache_only=True))
 print(f"Total discovery records: {record_count}")

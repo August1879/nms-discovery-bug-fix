@@ -1,14 +1,8 @@
-import json
+from save_safety import discovery_records, load_json
 
 print("Loading save data...")
-with open('full_save.json', 'r', encoding='utf-8', errors='ignore') as f:
-    content = f.read()
-
-content = content.replace('\\', '\\\\').replace('\\\\"', '\\"')
-content = "".join(ch for ch in content if ord(ch) >= 32 or ch in '\n\r\t')
-data = json.loads(content, strict=False)
-
-records = data.get("DiscoveryManagerData", {}).get("DiscoveryData-v1", {}).get("Store", {}).get("Record", [])
+data, _ = load_json('full_save.json')
+records = discovery_records(data)
 
 f_count = 0
 for r in records:

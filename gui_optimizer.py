@@ -1,8 +1,40 @@
 import os
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
+import urllib.request
+import urllib.error
+import webbrowser
+import threading
 
 from save_safety import load_json, optimize_data, write_output
+
+CURRENT_VERSION = "v1.1.4"
+REPO_URL = "https://api.github.com/repos/August1879/nms-discovery-bug-fix/releases/latest"
+
+def check_for_updates():
+    def _check():
+        try:
+            req = urllib.request.Request(REPO_URL, headers={'User-Agent': 'NMS-Optimizer'})
+            with urllib.request.urlopen(req, timeout=3) as response:
+                import json
+                data = json.loads(response.read().decode('utf-8'))
+                latest_version = data.get("tag_name")
+                
+                if latest_version and latest_version != CURRENT_VERSION:
+                    release_url = data.get("html_url")
+                    
+                    # Schedule the popup on the main Tkinter thread
+                    root.after(0, lambda: prompt_update(latest_version, release_url))
+        except Exception:
+            pass # Fail silently if they have no internet connection
+
+    def prompt_update(latest, url):
+        msg = f"A new version of the Optimizer ({latest}) is available!\n\nYou are currently running {CURRENT_VERSION}.\n\nWould you like to download the update?"
+        if messagebox.askyesno("Update Available", msg):
+            webbrowser.open(url)
+
+    # Run the internet check in the background
+    threading.Thread(target=_check, daemon=True).start()
 
 def browse_file():
     filepath = filedialog.askopenfilename(filetypes=[("JSON Files", "*.json"), ("All Files", "*.*")])
@@ -141,10 +173,9 @@ def optimize_save(log_widget):
         log_message(log_widget, f"ERROR: {str(e)}")
         messagebox.showerror("Error", f"Failed to process file:\n{str(e)}")
 
-
 # --- Modern Dark Theme UI Setup ---
 root = tk.Tk()
-root.title("NMS Save Optimizer v1.1.4 (Dark Edition)")
+root.title(f"NMS Save Optimizer {CURRENT_VERSION} (Dark Edition)")
 root.geometry("520x680")
 root.resizable(False, False)
 
@@ -224,5 +255,8 @@ log_box.config(state=tk.DISABLED)
 scrollbar = ttk.Scrollbar(log_frame, orient="vertical", command=log_box.yview)
 scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 log_box.config(yscrollcommand=scrollbar.set)
+
+# Check for updates in the background before starting the main loop
+check_for_updates()
 
 root.mainloop()

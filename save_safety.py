@@ -89,7 +89,7 @@ def optimize_data(data, username, whitelist, options, update_reserves=True):
         if isinstance(generation_id, list) and len(generation_id) == 2:
             existing_ids.add(tuple(map(str, generation_id)))
 
-    kept, removed, added = [], []
+    kept, removed, added = [], [], []
     protected = 0
     names = {name.casefold() for name in whitelist}
     owner_name = username.casefold()
